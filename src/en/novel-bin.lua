@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.2","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.0","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -12,45 +12,58 @@ end
 
 -- HOT LIST
 local function hot(data)
-	local doc = GETDocument(baseURL .. "allvisit/", {
-		["User-Agent"] = "Mozilla/5.0"
-	})
+	local doc = GETDocument(baseURL .. "allvisit/")
 
-	local nodes = doc:select("a")
+	local container = doc:selectFirst(".list.list-novel.col-xs-12")
+	if not container then return {} end
+
+	local rows = container:select(".row")
 	local novels = {}
 
-	for i = 0, nodes:size() - 1 do
-		local a = nodes:get(i)
-		local href = a:attr("href")
+	for i = 0, rows:size() - 1 do
+		local row = rows:get(i)
 
-		if href and href:find("/novel-bin/") then
-			table.insert(novels, Novel({
-				title = a:text(),
-				link = shrinkURL(href)
-			}))
+		-- EXCLUDE genre blocks
+		if not row:selectFirst(".list-genre") then
+			local a = row:selectFirst("a")
+			local img = row:selectFirst("img")
+
+			if a then
+				table.insert(novels, Novel({
+					title = a:text(),
+					link = shrinkURL(a:attr("href")),
+					imageURL = img and img:attr("src") or ""
+				}))
+			end
 		end
 	end
 
 	return novels
-end 
+end
 -- SEARCH
 local function search(data)
-	local doc = GETDocument(baseURL .. "search?keyword=" .. data[QUERY], {
-		["User-Agent"] = "Mozilla/5.0"
-	})
+	local doc = GETDocument(baseURL .. "search?keyword=" .. data[QUERY])
 
-	local nodes = doc:select("a")
+	local container = doc:selectFirst(".list.list-novel.col-xs-12")
+	if not container then return {} end
+
+	local rows = container:select(".row")
 	local novels = {}
 
-	for i = 0, nodes:size() - 1 do
-		local a = nodes:get(i)
-		local href = a:attr("href")
+	for i = 0, rows:size() - 1 do
+		local row = rows:get(i)
 
-		if href and href:find("/novel-bin/") then
-			table.insert(novels, Novel({
-				title = a:text(),
-				link = shrinkURL(href)
-			}))
+		if not row:selectFirst(".list-genre") then
+			local a = row:selectFirst("a")
+			local img = row:selectFirst("img")
+
+			if a then
+				table.insert(novels, Novel({
+					title = a:text(),
+					link = shrinkURL(a:attr("href")),
+					imageURL = img and img:attr("src") or ""
+				}))
+			end
 		end
 	end
 
