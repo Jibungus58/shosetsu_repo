@@ -147,32 +147,6 @@ local function parseNovel(novelURL)
 
 	return info
 end
-info:setImageURL(imageURL)
-    for i = 0, columns:size() - 1 do
-        local col = columns:get(i)
-    
-        local list = col:selectFirst("ul.list-chapter")
-        if list then
-            local items = list:select("li")
-    
-            for j = 0, items:size() - 1 do
-                local li = items:get(j)
-                local a = li:selectFirst("a")
-    
-                if a then
-                    table.insert(chapters, NovelChapter({
-                        title = a:text(),
-                        link = shrinkURL(a:attr("href"))
-                    }))
-                end
-            end
-        end
-    end
-
-	info:setChapters(chapters)
-
-	return info
-end
 
 -- CHAPTER PAGE
 local function getPassage(chapterURL)
