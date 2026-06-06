@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.6","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.7","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -42,7 +42,11 @@ local function extractNovel(row)
 	})
 end
 local function hot(data)
-	local doc = GETDocument(baseURL .. "allvisit/?page=")
+	local page = data[PAGE] or 1
+
+	local url = baseURL .. "allvisit/?page=" .. page
+	local doc = GETDocument(url)
+
 	local container = doc:selectFirst(".list.list-novel.col-xs-12")
 	if not container then return {} end
 
