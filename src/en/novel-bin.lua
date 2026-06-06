@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.6.7","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -30,7 +30,16 @@ local function hot(data)
 		if not row:selectFirst(".list-genre") then
 			local a = row:selectFirst("a")
             local img = row:selectFirst("img")
-            local imgURL = img and (img:attr("data-src") or img:attr("src")) or ""
+
+            local imageURL = ""
+            
+            if img then
+                imageURL = img:attr("src")
+            
+                if imageURL:sub(1, 1) == "/" then
+                    imageURL = baseURL:gsub("/$", "") .. imageURL
+                end
+            end
 
 			if a then
 				table.insert(novels, Novel({
@@ -60,7 +69,16 @@ local function search(data)
 		if not row:selectFirst(".list-genre") then
 			local a = row:selectFirst("a")
             local img = row:selectFirst("img")
-            local imgURL = img and (img:attr("data-src") or img:attr("src")) or ""
+
+            local imageURL = ""
+            
+            if img then
+                imageURL = img:attr("src")
+            
+                if imageURL:sub(1, 1) == "/" then
+                    imageURL = baseURL:gsub("/$", "") .. imageURL
+                end
+            end
 
 			if a then
 				table.insert(novels, Novel({
