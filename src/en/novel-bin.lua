@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.4","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.5","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -14,9 +14,35 @@ local function expandURL(url)
 	return baseURL .. url
 end
 -- HOT LIST
+local function extractNovel(row)
+	local a = row:selectFirst("h4 a, h3 a, .title a, .novel-title a, a[href*='/novel-bin/']")
+
+	if not a then return nil end
+
+	local href = a:attr("href")
+	local title = a:text()
+
+	local img = row:selectFirst("img")
+	local imageURL = ""
+
+	if img then
+		imageURL =
+			img:attr("data-src") ~= "" and img:attr("data-src")
+			or img:attr("src")
+	end
+
+	if imageURL and imageURL:sub(1,1) == "/" then
+		imageURL = baseURL:gsub("/$", "") .. imageURL
+	end
+
+	return Novel({
+		title = title,
+		link = shrinkURL(href),
+		imageURL = imageURL
+	})
+end
 local function hot(data)
 	local doc = GETDocument(baseURL .. "allvisit/")
-
 	local container = doc:selectFirst(".list.list-novel.col-xs-12")
 	if not container then return {} end
 
@@ -24,36 +50,14 @@ local function hot(data)
 	local novels = {}
 
 	for i = 0, rows:size() - 1 do
-		local row = rows:get(i)
-
-		-- EXCLUDE genre blocks
-		if not row:selectFirst(".list-genre") then
-			local a = row:selectFirst("a")
-            local img = row:selectFirst("img")
-
-            local imageURL = ""
-            
-            if img then
-                imageURL = img:attr("src")
-            
-                if imageURL:sub(1, 1) == "/" then
-                    imageURL = baseURL:gsub("/$", "") .. imageURL
-                end
-            end
-
-			if a then
-				table.insert(novels, Novel({
-					title = a:text() .. " | " .. imageURL,
-					link = shrinkURL(a:attr("href")),
-					imageURL = imageUrl
-				}))
-			end
+		local n = extractNovel(rows:get(i))
+		if n then
+			table.insert(novels, n)
 		end
 	end
 
 	return novels
 end
--- SEARCH
 local function search(data)
 	local doc = GETDocument(baseURL .. "search?keyword=" .. data[QUERY])
 
@@ -64,29 +68,9 @@ local function search(data)
 	local novels = {}
 
 	for i = 0, rows:size() - 1 do
-		local row = rows:get(i)
-
-		if not row:selectFirst(".list-genre") then
-			local a = row:selectFirst("a")
-            local img = row:selectFirst("img")
-
-            local imageURL = ""
-            
-            if img then
-                imageURL = img:attr("src")
-            
-                if imageURL:sub(1, 1) == "/" then
-                    imageURL = baseURL:gsub("/$", "") .. imageURL
-                end
-            end
-
-			if a then
-				table.insert(novels, Novel({
-					title = a:text() .. " | " .. imageURL,
-					link = shrinkURL(a:attr("href")),
-					imageURL = imageURL
-				}))
-			end
+		local n = extractNovel(rows:get(i))
+		if n then
+			table.insert(novels, n)
 		end
 	end
 
