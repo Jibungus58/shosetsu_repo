@@ -28,7 +28,7 @@ local baseURL = "https://novel-bin.net/"
 --- Optional, Default is empty.
 ---
 --- @type string
-local imageURL = "https://www.pexels.com/search/cat/"
+local imageURL = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F104827%2Fcat-pet-animal-domestic-104827.jpeg%3Fcs%3Dsrgb%26dl%3Dpexels-pixabay-104827.jpg%26fm%3Djpg&f=1&nofb=1&ipt=7fb021662288d43fb90d12075d988ae71dec3bae8963684182d2d4f7ceba5794"
 
 --- Shosetsu tries to handle cloudflare protection if this is set to true.
 ---
