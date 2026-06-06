@@ -13,55 +13,50 @@ end
 -- HOT LIST
 local function hot(data)
 	local page = data[PAGE]
-	local url = baseURL .. "allvisit/?page=" .. page
+	local url = baseURL .. "allvisit/"
 
 	local doc = GETDocument(url)
+	local nodes = doc:select(".novel-item")
 	local novels = {}
 
-    local nodes = doc:select(".novel-item, .list-item, article")
-    local novels = {}
-    
-    for i = 0, nodes:size() - 1 do
-        local v = nodes:get(i)
-        local a = v:selectFirst("a")
-    
-        if a then
-            table.insert(novels, Novel({
-                title = a:text(),
-                link = shrinkURL(a:attr("href")),
-                imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
-            }))
-        end
-    end
-    
-    return novels
+	for i = 0, nodes:size() - 1 do
+		local v = nodes:get(i)
+		local a = v:selectFirst("a")
+
+		if a then
+			table.insert(novels, Novel({
+				title = a:text(),
+				link = shrinkURL(a:attr("href")),
+				imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
+			}))
+		end
+	end
+
+	return novels
 end
 
 -- SEARCH
 local function search(data)
 	local query = data[QUERY]
-	local page = data[PAGE]
 
 	local url = baseURL .. "search?keyword=" .. query
 
 	local doc = GETDocument(url)
+	local nodes = doc:select(".novel-item")
 	local novels = {}
 
-    local nodes = doc:select(".novel-item, .list-item, article")
-    local novels = {}
-    
-    for i = 0, nodes:size() - 1 do
-        local v = nodes:get(i)
-        local a = v:selectFirst("a")
-    
-        if a then
-            table.insert(novels, Novel({
-                title = a:text(),
-                link = shrinkURL(a:attr("href")),
-                imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
-            }))
-        end
-    end
+	for i = 0, nodes:size() - 1 do
+		local v = nodes:get(i)
+		local a = v:selectFirst("a")
+
+		if a then
+			table.insert(novels, Novel({
+				title = a:text(),
+				link = shrinkURL(a:attr("href")),
+				imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
+			}))
+		end
+	end
 
 	return novels
 end
