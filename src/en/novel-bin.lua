@@ -1,7 +1,7 @@
 local BASE_URL = "https://novel-bin.net"
 
 return {
-    id = 82356987,
+    id = 11151412,
     name = "Novel-bin",
     version = 1,
 
