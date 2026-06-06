@@ -1,70 +1,23 @@
-
-
-local BASE_URL = "https://novel-bin.net/"
+local BASE_URL = "https://novel-bin.net"
 
 return {
-    id = 11151412,
+    id = 82356987,
     name = "Novel-bin",
-    version = 1.0.0,
+    version = 1,
 
-    listings = {
-        {
-            name = "Latest Updates",
-            isIncrementing = false,
-            method = function(data)
-                return {}
-            end
-        }
-    },
+    listings = {},
 
     search = function(data)
-        local query = data[QUERY]
-
-        local url = BASE_URL .. "/search?keyword=" .. query
-        local html = GET(url)
-
-        local novels = {}
-
-        -- Parse results here
-        -- table.insert(novels, Novel {
-        --     title = "Novel Title",
-        --     link = "/novel/example/",
-        --     imageURL = "https://..."
-        -- })
-
-        return novels
+        return {}
     end,
 
-    parseNovel = function(novelURL, loadChapters)
-        local html = GET(BASE_URL .. novelURL)
-
+    parseNovel = function(url, loadChapters)
         return NovelInfo {
-            title = "Novel Title",
-            imageURL = "",
-            description = "",
-            genres = {},
-            authors = {},
-            status = NovelStatus.UNKNOWN,
-
-            chapters = loadChapters and {
-                Chapter {
-                    title = "Chapter 1",
-                    link = "/chapter-1"
-                }
-            } or nil
+            title = "Test"
         }
     end,
 
-    getPassage = function(chapterURL)
-        local html = GET(BASE_URL .. chapterURL)
-
-        local document = Document(html)
-
-        -- Remove unwanted elements
-        -- document:select(".ads"):remove()
-
-        local content = document:selectFirst(".chapter-content")
-
-        return pageOfElem(content)
+    getPassage = function(url)
+        return {}
     end
 }
