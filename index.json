@@ -10,7 +10,16 @@
             "ver": "1.0.0",
             "libVer": "1.0.0",
             "md5": ""
-        }
+        },
+        {      "id": 1308676539969,
+        "name": "FanNovels",
+        "fileName": "FanNovels",
+        "imageURL": "https://jobobby04.github.io/ShosetsuExtensions/master/icons/fan_novels.png",
+        "lang": "en",
+        "ver": "1.0.3",
+        "libVer": "1.0.0",
+        "md5": "5e29971ae05cfe4ebb666d04cf7dffc52fbf14b5e2e45fdb436a2a1eaa2f0f31",
+        "type": "LuaScript"}
     ],
     "styles": []
 }
