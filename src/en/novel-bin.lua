@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.3","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.9","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -123,10 +123,9 @@ end
 
 -- CHAPTER PAGE
 local function getPassage(chapterURL)
-	local url = expandURL(chapterURL)
-	local doc = GETDocument(url)
+	local doc = GETDocument(expandURL(chapterURL))
 
-	local content = doc:selectFirst(".chapter-content, .content, #content")
+	local content = doc:selectFirst("#chr-content")
 
 	if content then
 		return content:html()
