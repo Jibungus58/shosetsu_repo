@@ -18,18 +18,23 @@ local function hot(data)
 	local doc = GETDocument(url)
 	local novels = {}
 
-	for _, v in ipairs(doc:select(".novel-item, .list-item, article")) do
-		local a = v:selectFirst("a")
-		if a then
-			table.insert(novels, Novel({
-				title = a:text(),
-				link = shrinkURL(a:attr("href")),
-				imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
-			}))
-		end
-	end
-
-	return novels
+    local nodes = doc:select(".novel-item, .list-item, article")
+    local novels = {}
+    
+    for i = 0, nodes:size() - 1 do
+        local v = nodes:get(i)
+        local a = v:selectFirst("a")
+    
+        if a then
+            table.insert(novels, Novel({
+                title = a:text(),
+                link = shrinkURL(a:attr("href")),
+                imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
+            }))
+        end
+    end
+    
+    return novels
 end
 
 -- SEARCH
@@ -37,21 +42,26 @@ local function search(data)
 	local query = data[QUERY]
 	local page = data[PAGE]
 
-	local url = baseURL .. "search?keyword=" .. query .. "&page=" .. page
+	local url = baseURL .. "search?keyword=" .. query
 
 	local doc = GETDocument(url)
 	local novels = {}
 
-	for _, v in ipairs(doc:select(".novel-item, .list-item, article")) do
-		local a = v:selectFirst("a")
-		if a then
-			table.insert(novels, Novel({
-				title = a:text(),
-				link = shrinkURL(a:attr("href")),
-				imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
-			}))
-		end
-	end
+    local nodes = doc:select(".novel-item, .list-item, article")
+    local novels = {}
+    
+    for i = 0, nodes:size() - 1 do
+        local v = nodes:get(i)
+        local a = v:selectFirst("a")
+    
+        if a then
+            table.insert(novels, Novel({
+                title = a:text(),
+                link = shrinkURL(a:attr("href")),
+                imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
+            }))
+        end
+    end
 
 	return novels
 end
