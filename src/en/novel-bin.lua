@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.7","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.8","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -145,7 +145,7 @@ end
 
 -- LISTINGS
 local listings = {
-	Listing("Hot", false, hot),
+	Listing("Hot", true, hot),
 }
 
 return {
