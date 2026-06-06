@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.9","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.2","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -100,8 +100,12 @@ local function parseNovel(novelURL)
 		info:setDescription(desc:text())
 	end
 
-	local img = document:selectFirst(".book img, img")
+	local book = document:selectFirst("div.book")
+
 	local imageURL = ""
+
+if book then
+	local img = book:selectFirst("img")
 
 	if img then
 		imageURL = img:attr("data-src")
@@ -114,6 +118,9 @@ local function parseNovel(novelURL)
 			imageURL = baseURL:gsub("/$", "") .. imageURL
 		end
 	end
+end
+
+info:setImageURL(imageURL)
 
 	info:setImageURL(imageURL)
 
