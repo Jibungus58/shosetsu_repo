@@ -1,15 +1,18 @@
--- {"id":11151412,"ver":"1.0.9","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.6.7","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
 local function shrinkURL(url)
-	return url:gsub(baseURL, "")
+	return url:gsub("^https://novel%-bin%.net/", "")
 end
 
 local function expandURL(url)
+	if url:match("^https?://") then
+		return url
+	end
+
 	return baseURL .. url
 end
-
 -- HOT LIST
 local function hot(data)
 	local doc = GETDocument(baseURL .. "allvisit/")
