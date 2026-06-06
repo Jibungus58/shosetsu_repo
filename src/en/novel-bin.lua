@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.5","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.3","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -56,7 +56,7 @@ local function search(data)
 
 		if not row:selectFirst(".list-genre") then
 			local a = row:selectFirst("a")
-			local img = row:selectFirst("img")
+            local img = row:selectFirst("img")
             local imgURL = img and (img:attr("data-src") or img:attr("src")) or ""
 
 			if a then
@@ -73,32 +73,53 @@ local function search(data)
 end
 
 -- NOVEL PAGE
-local chapters = {}
+local function parseNovel(novelURL)
+	local url = expandURL(novelURL)
+	local doc = GETDocument(url)
 
-local columns = doc:select(".col-xs-12.col-sm-4.col-md-4")
+	local info = NovelInfo()
 
-for i = 0, columns:size() - 1 do
-	local col = columns:get(i)
+	info:setTitle((doc:selectFirst("h1") and doc:selectFirst("h1"):text()) or "Unknown")
 
-	local list = col:selectFirst("ul.list-chapter")
-	if list then
-		local items = list:select("li")
-
-		for j = 0, items:size() - 1 do
-			local li = items:get(j)
-			local a = li:selectFirst("a")
-
-			if a then
-				table.insert(chapters, NovelChapter({
-					title = a:text(),
-					link = shrinkURL(a:attr("href"))
-				}))
-			end
-		end
+	local author = doc:selectFirst(".author, .writer")
+	if author then
+		info:setAuthor(author:text())
 	end
-end
 
-info:setChapters(chapters)
+	local desc = doc:selectFirst(".description, .summary, .novel-desc")
+	if desc then
+		info:setDescription(desc:text())
+	end
+
+    local chapters = {}
+
+    local columns = doc:select(".col-xs-12.col-sm-4.col-md-4")
+    
+    for i = 0, columns:size() - 1 do
+        local col = columns:get(i)
+    
+        local list = col:selectFirst("ul.list-chapter")
+        if list then
+            local items = list:select("li")
+    
+            for j = 0, items:size() - 1 do
+                local li = items:get(j)
+                local a = li:selectFirst("a")
+    
+                if a then
+                    table.insert(chapters, NovelChapter({
+                        title = a:text(),
+                        link = shrinkURL(a:attr("href"))
+                    }))
+                end
+            end
+        end
+    end
+
+	info:setChapters(chapters)
+
+	return info
+end
 
 -- CHAPTER PAGE
 local function getPassage(chapterURL)
