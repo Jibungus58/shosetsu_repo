@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.2","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.3","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -45,7 +45,7 @@ local function hot(data)
 				table.insert(novels, Novel({
 					title = a:text(),
 					link = shrinkURL(a:attr("href")),
-					imageURL = img and img:attr("src") or ""
+					imageURL = imageUrl
 				}))
 			end
 		end
@@ -84,7 +84,7 @@ local function search(data)
 				table.insert(novels, Novel({
 					title = a:text(),
 					link = shrinkURL(a:attr("href")),
-					imageURL = img and img:attr("src") or ""
+					imageURL = imageURL
 				}))
 			end
 		end
