@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.8","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.9","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -84,26 +84,70 @@ end
 -- NOVEL PAGE
 local function parseNovel(novelURL)
 	local url = expandURL(novelURL)
-	local doc = GETDocument(url)
+	local document = GETDocument(url)
 
 	local info = NovelInfo()
 
-	info:setTitle((doc:selectFirst("h1") and doc:selectFirst("h1"):text()) or "Unknown")
+	info:setTitle((document:selectFirst("h1") and document:selectFirst("h1"):text()) or "Unknown")
 
-	local author = doc:selectFirst(".author, .writer")
+	local author = document:selectFirst(".author")
 	if author then
 		info:setAuthor(author:text())
 	end
 
-	local desc = doc:selectFirst(".description, .summary, .novel-desc")
+	local desc = document:selectFirst("div.desc-text")
 	if desc then
 		info:setDescription(desc:text())
 	end
 
-    local chapters = {}
+	local img = document:selectFirst(".book img, img")
+	local imageURL = ""
 
-    local columns = doc:select(".col-xs-12.col-sm-4.col-md-4")
-    
+	if img then
+		imageURL = img:attr("data-src")
+
+		if imageURL == "" then
+			imageURL = img:attr("src")
+		end
+
+		if imageURL:sub(1, 1) == "/" then
+			imageURL = baseURL:gsub("/$", "") .. imageURL
+		end
+	end
+
+	info:setImageURL(imageURL)
+
+	-- chapters (your existing working logic)
+	local chapters = {}
+
+	local columns = document:select(".col-xs-12.col-sm-4.col-md-4")
+
+	for i = 0, columns:size() - 1 do
+		local col = columns:get(i)
+		local list = col:selectFirst("ul.list-chapter")
+
+		if list then
+			local items = list:select("li")
+
+			for j = 0, items:size() - 1 do
+				local li = items:get(j)
+				local a = li:selectFirst("a")
+
+				if a then
+					table.insert(chapters, NovelChapter({
+						title = a:text(),
+						link = shrinkURL(a:attr("href"))
+					}))
+				end
+			end
+		end
+	end
+
+	info:setChapters(chapters)
+
+	return info
+end
+info:setImageURL(imageURL)
     for i = 0, columns:size() - 1 do
         local col = columns:get(i)
     
