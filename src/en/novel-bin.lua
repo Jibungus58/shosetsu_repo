@@ -1,4 +1,4 @@
-local json = Require("dkjson")
+
 
 local BASE_URL = "https://novel-bin.net/"
 
