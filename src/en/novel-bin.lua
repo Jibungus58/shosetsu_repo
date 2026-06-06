@@ -10,55 +10,33 @@ local function expandURL(url)
 	return baseURL .. url
 end
 
--- HOT LIST
-local function hot(data)
-	local page = data[PAGE]
-	local url = baseURL .. "allvisit/"
-
-	local doc = GETDocument(url)
-	local nodes = doc:select(".novel-item")
+local function debugList(doc)
+	local nodes = doc:select("a")
 	local novels = {}
 
 	for i = 0, nodes:size() - 1 do
-		local v = nodes:get(i)
-		local a = v:selectFirst("a")
+		local a = nodes:get(i)
 
-		if a then
+		local href = a:attr("href")
+		local title = a:text()
+
+		if href and href:find("/novel-bin/") then
 			table.insert(novels, Novel({
-				title = a:text(),
-				link = shrinkURL(a:attr("href")),
-				imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
+				title = title,
+				link = shrinkURL(href)
 			}))
 		end
 	end
 
 	return novels
 end
-
--- SEARCH
+local function hot(data)
+	local doc = GETDocument(baseURL .. "allvisit/")
+	return debugList(doc)
+end
 local function search(data)
-	local query = data[QUERY]
-
-	local url = baseURL .. "search?keyword=" .. query
-
-	local doc = GETDocument(url)
-	local nodes = doc:select(".novel-item")
-	local novels = {}
-
-	for i = 0, nodes:size() - 1 do
-		local v = nodes:get(i)
-		local a = v:selectFirst("a")
-
-		if a then
-			table.insert(novels, Novel({
-				title = a:text(),
-				link = shrinkURL(a:attr("href")),
-				imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
-			}))
-		end
-	end
-
-	return novels
+	local doc = GETDocument(baseURL .. "search?keyword=" .. data[QUERY])
+	return debugList(doc)
 end
 
 -- NOVEL PAGE
