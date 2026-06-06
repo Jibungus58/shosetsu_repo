@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.2","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -10,33 +10,41 @@ local function expandURL(url)
 	return baseURL .. url
 end
 
-local function debugList(doc)
-	local nodes = doc:select("a")
+-- HOT LIST
+local function hot(data)
+	local doc = GETDocument(baseURL .. "allvisit/")
+
+	return {
+		Novel({
+			title = doc:text()
+		})
+	}
+end
+
+-- SEARCH
+local function search(data)
+	local query = data[QUERY]
+
+	local url = baseURL .. "search?keyword=" .. query
+
+	local doc = GETDocument(url)
+	local nodes = doc:select(".novel-item")
 	local novels = {}
 
 	for i = 0, nodes:size() - 1 do
-		local a = nodes:get(i)
+		local v = nodes:get(i)
+		local a = v:selectFirst("a")
 
-		local href = a:attr("href")
-		local title = a:text()
-
-		if href and href:find("/novel-bin/") then
+		if a then
 			table.insert(novels, Novel({
-				title = title,
-				link = shrinkURL(href)
+				title = a:text(),
+				link = shrinkURL(a:attr("href")),
+				imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
 			}))
 		end
 	end
 
 	return novels
-end
-local function hot(data)
-	local doc = GETDocument(baseURL .. "allvisit/")
-	return debugList(doc)
-end
-local function search(data)
-	local doc = GETDocument(baseURL .. "search?keyword=" .. data[QUERY])
-	return debugList(doc)
 end
 
 -- NOVEL PAGE
