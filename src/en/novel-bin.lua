@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.2","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -12,36 +12,44 @@ end
 
 -- HOT LIST
 local function hot(data)
-	local doc = GETDocument(baseURL .. "allvisit/")
+	local doc = GETDocument(baseURL .. "allvisit/", {
+		["User-Agent"] = "Mozilla/5.0"
+	})
 
-	local body = doc:selectFirst("body")
-
-	return {
-		Novel({
-			title = body and body:html() or "NO BODY"
-		})
-	}
-end
-
--- SEARCH
-local function search(data)
-	local query = data[QUERY]
-
-	local url = baseURL .. "search?keyword=" .. query
-
-	local doc = GETDocument(url)
-	local nodes = doc:select(".novel-item")
+	local nodes = doc:select("a")
 	local novels = {}
 
 	for i = 0, nodes:size() - 1 do
-		local v = nodes:get(i)
-		local a = v:selectFirst("a")
+		local a = nodes:get(i)
+		local href = a:attr("href")
 
-		if a then
+		if href and href:find("/novel-bin/") then
 			table.insert(novels, Novel({
 				title = a:text(),
-				link = shrinkURL(a:attr("href")),
-				imageURL = (v:selectFirst("img") and v:selectFirst("img"):attr("src")) or ""
+				link = shrinkURL(href)
+			}))
+		end
+	end
+
+	return novels
+end 
+-- SEARCH
+local function search(data)
+	local doc = GETDocument(baseURL .. "search?keyword=" .. data[QUERY], {
+		["User-Agent"] = "Mozilla/5.0"
+	})
+
+	local nodes = doc:select("a")
+	local novels = {}
+
+	for i = 0, nodes:size() - 1 do
+		local a = nodes:get(i)
+		local href = a:attr("href")
+
+		if href and href:find("/novel-bin/") then
+			table.insert(novels, Novel({
+				title = a:text(),
+				link = shrinkURL(href)
 			}))
 		end
 	end
