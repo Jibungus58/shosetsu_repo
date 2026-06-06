@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.3","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -14,9 +14,11 @@ end
 local function hot(data)
 	local doc = GETDocument(baseURL .. "allvisit/")
 
+	local body = doc:selectFirst("body")
+
 	return {
 		Novel({
-			title = doc:text()
+			title = body and body:html() or "NO BODY"
 		})
 	}
 end
