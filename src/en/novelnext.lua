@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.0.0","libVer":"1.0.0","author":"me","repo":"novelnext"}
+-- {"id":11151411,"ver":"1.0.0","libVer":"1.0.0","author":"me","repo":"novelnext"}
 
 local baseURL = "https://novelnext.org/"
 
@@ -174,7 +174,7 @@ local listings = {
 }
 
 return {
-	id = 11151412,
+	id = 11151411,
 	name = "novelnext",
 	baseURL = baseURL,
 
