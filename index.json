@@ -10,6 +10,16 @@
             "ver": "1.1.0",
             "libVer": "1.0.0",
             "md5": ""
+        },        
+        {
+            "name": "Novelnext",
+            "fileName": "novelnext",
+            "imageURL": "",
+            "id": 11151412,
+            "lang": "en",
+            "ver": "1.0.0",
+            "libVer": "1.0.0",
+            "md5": ""
         }
     ],
     "styles": []
