@@ -1,4 +1,4 @@
--- {"id":11151410,"ver":"1.0.0","libVer":"1.0.0","author":"me","repo":"noveldex"}
+-- {"id":11151410,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"noveldex"}
 
 local baseURL = "https://noveldex.io"
 
@@ -67,13 +67,34 @@ local function hot(data)
         baseURL .. "/series?sort=popular&page=" .. page
     )
 
-    local rows = doc:select("div.group[role=gridcell]")
+    local rows = doc:select("div.group")
 
     local novels = {}
 
     for i = 0, rows:size() - 1 do
-        local n = extractNovel(rows:get(i))
-        if n then table.insert(novels, n) end
+        local row = rows:get(i)
+
+        local a = row:selectFirst("a[href*='/series/']")
+
+        local img = row:selectFirst("img")
+
+        if a then
+            local title = img and img:attr("alt") or a:text()
+
+            local imageURL = ""
+            if img then
+                imageURL = img:attr("src") or ""
+                if imageURL:sub(1,1) == "/" then
+                    imageURL = baseURL .. imageURL
+                end
+            end
+
+            table.insert(novels, Novel({
+                title = title,
+                link = shrinkURL(a:attr("href")),
+                imageURL = imageURL
+            }))
+        end
     end
 
     return novels
@@ -86,17 +107,20 @@ end
 local function search(data)
     local query = data[QUERY]
 
-    local doc = GETDocument(
-        baseURL .. "/search?q=" .. query
+    local json = Request(
+        baseURL .. "/api/search?q=" .. query
     )
 
-    local rows = doc:select("div.group[role=gridcell]")
+    local obj = JSON.decode(json)
 
     local novels = {}
 
-    for i = 0, rows:size() - 1 do
-        local n = extractNovel(rows:get(i))
-        if n then table.insert(novels, n) end
+    for _, s in ipairs(obj.series or {}) do
+        table.insert(novels, Novel({
+            title = s.title,
+            link = "/series/" .. s.slug,
+            imageURL = s.coverImage and (baseURL .. s.coverImage) or ""
+        }))
     end
 
     return novels
@@ -134,21 +158,19 @@ local function parseNovel(novelURL)
     end
 
     -- COVER IMAGE
-    local cover = document:selectFirst("img.object-cover")
+local cover = document:selectFirst("img.object-cover")
 
-    if cover then
-        local imgURL =
-            cover:attr("src")
-            or cover:attr("data-src")
+if cover then
+    local img =
+        cover:attr("src")
+        or cover:attr("data-src")
 
-        if imgURL and imgURL:sub(1,1) == "/" then
-            imgURL = baseURL .. imgURL
-        end
-
-        if imgURL then
-            info:setImageURL(imgURL)
-        end
+    if img and img:sub(1,1) == "/" then
+        img = baseURL .. img
     end
+
+    info:setImageURL(img)
+end
 
     ------------------------------------------------
     -- CHAPTERS
@@ -161,17 +183,25 @@ local function parseNovel(novelURL)
     for i = 0, links:size() - 1 do
         local a = links:get(i)
 
-        local titleNode = a:selectFirst("span.font-medium")
+        local href = a:attr("href")
 
-        local chapterTitle =
-            titleNode and titleNode:text()
-            or a:text()
-            or "Chapter"
+        -- HARD FILTER: real chapters always include /chapter/{number}
+        if href and href:match("/chapter/%d+") then
 
-        table.insert(chapters, NovelChapter({
-            title = chapterTitle,
-            link = shrinkURL(a:attr("href"))
-        }))
+            local titleNode = a:selectFirst("span.font-medium")
+
+            local title =
+                titleNode and titleNode:text()
+                or a:text()
+
+            -- FILTER OUT UI BUTTONS
+            if title and title ~= "" and not title:lower():find("start reading") then
+                table.insert(chapters, NovelChapter({
+                    title = title,
+                    link = shrinkURL(href)
+                }))
+            end
+        end
     end
 
     info:setChapters(chapters)
@@ -186,9 +216,7 @@ end
 local function getPassage(chapterURL)
     local doc = GETDocument(expandURL(chapterURL))
 
-    local content =
-        doc:selectFirst("section[data-chapter-id]")
-        or doc:selectFirst("section")
+    local content = doc:selectFirst("section[data-chapter-id]")
 
     if content then
         return content:html()
