@@ -97,18 +97,19 @@ local function parseNovel(novelURL)
 
 	local imageURL = ""
 
-if book then
-	local img = book:selectFirst("img.object-cover")
+	if book then
+		local img = book:selectFirst("img.object-cover")
 
-	if img then
-		imageURL = img:attr("data-src")
+		if img then
+			imageURL = img:attr("data-src")
 
-		if imageURL == "" then
-			imageURL = img:attr("src")
-		end
+			if imageURL == "" then
+				imageURL = img:attr("src")
+			end
 
-		if imageURL:sub(1, 1) == "/" then
-			imageURL = baseURL:gsub("/$", "") .. imageURL
+			if imageURL:sub(1, 1) == "/" then
+				imageURL = baseURL:gsub("/$", "") .. imageURL
+			end
 		end
 	end
 end
@@ -124,10 +125,9 @@ local chapterContainer =
     document:selectFirst("div.divide-y")
 
 if chapterContainer then
-
 	local links = document:select("a[href*='/chapter/']")
 
-print("chapter count = " .. links:size())
+	print("chapter count = " .. links:size())
 end
 
 info:setChapters(chapters)
