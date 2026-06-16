@@ -20,7 +20,7 @@ local function extractNovel(row)
     local a = row:selectFirst("a[href*='/series/']")
 
     if not a then return nil end
-
+end
 local img = a:selectFirst("img")
 
 local imageURL = ""
