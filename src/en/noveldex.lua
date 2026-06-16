@@ -124,24 +124,7 @@ local chapterContainer =
     document:selectFirst("div.divide-y")
 
 if chapterContainer then
-    /*local links =
-        chapterContainer:select("a[href*='/chapter/']")
 
-    for i = 0, links:size() - 1 do
-        local a = links:get(i)
-
-        local titleNode =
-            a:selectFirst("span.font-medium")
-
-        local title =
-            titleNode and titleNode:text()
-            or a:text()
-
-        table.insert(chapters, NovelChapter({
-            title = title,
-            link = shrinkURL(a:attr("href"))
-        }))
-    end*/
 	local links = document:select("a[href*='/chapter/']")
 
 print("chapter count = " .. links:size())
