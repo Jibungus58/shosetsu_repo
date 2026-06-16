@@ -1,4 +1,4 @@
--- {"id":11151410,"ver":"1.0.0","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151410,"ver":"1.0.0","libVer":"1.0.0","author":"me","repo":"noveldex"}
 
 local baseURL = "https://noveldex.io"
 
@@ -210,22 +210,18 @@ local listings = {
 ----------------------------------------------------
 
 return {
-    id = 11151412,
-    ver = "1.1.0",
-    libVer = "1.0.0",
-    author = "me",
-    repo = "novel-bin",
+	id = 11151410,
+	name = "noveldex",
+	baseURL = baseURL,
 
-    baseURL = baseURL,
+	listings = listings,
+	search = search,
+	hasSearch = true,
+	isSearchIncrementing = true,
 
-    listings = listings,
-    search = search,
-    hasSearch = true,
-    isSearchIncrementing = true,
+	parseNovel = parseNovel,
+	getPassage = getPassage,
 
-    parseNovel = parseNovel,
-    getPassage = getPassage,
-
-    shrinkURL = shrinkURL,
-    expandURL = expandURL,
+	shrinkURL = shrinkURL,
+	expandURL = expandURL,
 }
