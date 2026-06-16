@@ -1,4 +1,4 @@
--- {"id":11151410,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"noveldex"}
+-- {"id":11151410,"ver":"1.0.2","libVer":"1.0.0","author":"me","repo":"noveldex"}
 
 local baseURL = "https://noveldex.io/"
 
@@ -21,14 +21,16 @@ local function extractNovel(row)
 
     if not a then return nil end
 
-    local img = a:selectFirst("img")
-    if not img then return nil end
+local img = a:selectFirst("img")
 
-    return Novel({
-        title = img:attr("alt"),
-        link = shrinkURL(a:attr("href"):gsub("%?.*$", "")),
-        imageURL = img:attr("src")
-    })
+local imageURL = ""
+
+if img then
+    imageURL = img:attr("src")
+
+    if imageURL:sub(1,1) == "/" then
+        imageURL = "https://noveldex.io" .. imageURL
+    end
 end
 local function hot(data)
     local page = data[PAGE] or 1
@@ -122,7 +124,8 @@ local chapterContainer =
     document:selectFirst("div.divide-y")
 
 if chapterContainer then
-    local links = chapterContainer:select("a[href*='/chapter/']")
+    /*local links =
+        chapterContainer:select("a[href*='/chapter/']")
 
     for i = 0, links:size() - 1 do
         local a = links:get(i)
@@ -138,11 +141,14 @@ if chapterContainer then
             title = title,
             link = shrinkURL(a:attr("href"))
         }))
-    end
+    end*/
+	local links = document:select("a[href*='/chapter/']")
+
+print("chapter count = " .. links:size())
 end
 
 info:setChapters(chapters)
-end
+
 
 -- CHAPTER PAGE
 local function getPassage(chapterURL)
