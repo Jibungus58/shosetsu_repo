@@ -1,86 +1,77 @@
--- {"id":11151410,"ver":"1.0.0","libVer":"1.0.0","author":"me","repo":"novelnext"}
+-- {"id":11151410,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"noveldex"}
 
 local baseURL = "https://noveldex.io/"
 
 local function shrinkURL(url)
-	return url:gsub("^https://noveldex%.io/", "")
+    return url
+        :gsub("^https://noveldex%.io", "")
+        :gsub("%?.*$", "")
 end
 
 local function expandURL(url)
-	if url:match("^https?://") then
-		return url
-	end
+    if url:match("^https?://") then
+        return url
+    end
 
-	return baseURL .. url
+    return baseURL:gsub("/$", "") .. url
 end
 -- HOT LIST
 local function extractNovel(row)
-	local a = row:selectFirst("h4 a, h3 a, .title a, .novel-title a, a[href*='/noveldex/']")
+    local a = row:selectFirst("a[href*='/series/']")
 
-	if not a then return nil end
+    if not a then return nil end
 
-	local href = a:attr("href")
-	local title = a:text()
+    local img = a:selectFirst("img")
+    if not img then return nil end
 
-	local img = row:selectFirst("img")
-	local imageURL = ""
-
-	if img then
-		imageURL =
-			img:attr("data-src") ~= "" and img:attr("data-src")
-			or img:attr("src")
-	end
-
-	if imageURL and imageURL:sub(1,1) == "/" then
-		imageURL = baseURL:gsub("/$", "") .. imageURL
-	end
-
-	return Novel({
-		title = title,
-		link = shrinkURL(href),
-		imageURL = imageURL
-	})
+    return Novel({
+        title = img:attr("alt"),
+        link = shrinkURL(a:attr("href"):gsub("%?.*$", "")),
+        imageURL = img:attr("src")
+    })
 end
 local function hot(data)
-	local page = data[PAGE] or 1
+    local page = data[PAGE] or 1
 
-	local url = baseURL .. "allvisit/?page=" .. page
-	local doc = GETDocument(url)
+    local doc = GETDocument(
+        baseURL .. "series?sort=popular&page=" .. page
+    )
 
-	local container = doc:selectFirst(".list.list-novel.col-xs-12")
-	if not container then return {} end
+    local novels = {}
 
-	local rows = container:select(".row")
-	local novels = {}
+    local rows = doc:select("div.group[role=gridcell]")
 
-	for i = 0, rows:size() - 1 do
-		local n = extractNovel(rows:get(i))
-		if n then
-			table.insert(novels, n)
-		end
-	end
+    for i = 0, rows:size() - 1 do
+        local novel = extractNovel(rows:get(i))
 
-	return novels
+        if novel then
+            table.insert(novels, novel)
+        end
+    end
+
+    return novels
 end
 local function search(data)
-	local doc = GETDocument(baseURL .. "search?keyword=" .. data[QUERY])
+    local query = data[QUERY]
 
-	local container = doc:selectFirst(".list.list-novel.col-xs-12")
-	if not container then return {} end
+    local doc = GETDocument(
+        baseURL .. "search?q=" .. query
+    )
 
-	local rows = container:select(".row")
-	local novels = {}
+    local novels = {}
 
-	for i = 0, rows:size() - 1 do
-		local n = extractNovel(rows:get(i))
-		if n then
-			table.insert(novels, n)
-		end
-	end
+    local rows = doc:select("div.group[role=gridcell]")
 
-	return novels
+    for i = 0, rows:size() - 1 do
+        local novel = extractNovel(rows:get(i))
+
+        if novel then
+            table.insert(novels, novel)
+        end
+    end
+
+    return novels
 end
-
 -- NOVEL PAGE
 local function parseNovel(novelURL)
 	local url = expandURL(novelURL)
@@ -105,7 +96,7 @@ local function parseNovel(novelURL)
 	local imageURL = ""
 
 if book then
-	local img = book:selectFirst("img")
+	local img = book:selectFirst("img.object-cover")
 
 	if img then
 		imageURL = img:attr("data-src")
@@ -125,47 +116,46 @@ info:setImageURL(imageURL)
 	info:setImageURL(imageURL)
 
 	-- chapters (your existing working logic)
-	local chapters = {}
+local chapters = {}
 
-	local columns = document:select(".col-xs-12.col-sm-4.col-md-4")
+local chapterContainer =
+    document:selectFirst("div.divide-y")
 
-	for i = 0, columns:size() - 1 do
-		local col = columns:get(i)
-		local list = col:selectFirst("ul.list-chapter")
+if chapterContainer then
+    local links = chapterContainer:select("a[href*='/chapter/']")
 
-		if list then
-			local items = list:select("li")
+    for i = 0, links:size() - 1 do
+        local a = links:get(i)
 
-			for j = 0, items:size() - 1 do
-				local li = items:get(j)
-				local a = li:selectFirst("a")
+        local titleNode =
+            a:selectFirst("span.font-medium")
 
-				if a then
-					table.insert(chapters, NovelChapter({
-						title = a:text(),
-						link = shrinkURL(a:attr("href"))
-					}))
-				end
-			end
-		end
-	end
+        local title =
+            titleNode and titleNode:text()
+            or a:text()
 
-	info:setChapters(chapters)
+        table.insert(chapters, NovelChapter({
+            title = title,
+            link = shrinkURL(a:attr("href"))
+        }))
+    end
+end
 
-	return info
+info:setChapters(chapters)
 end
 
 -- CHAPTER PAGE
 local function getPassage(chapterURL)
-	local doc = GETDocument(expandURL(chapterURL))
+    local doc = GETDocument(expandURL(chapterURL))
 
-	local content = doc:selectFirst("#chr-content")
+    local content =
+        doc:selectFirst("section[data-chapter-id]")
 
-	if content then
-		return content:html()
-	end
+    if content then
+        return content:html()
+    end
 
-	return ""
+    return ""
 end
 
 -- LISTINGS
