@@ -1,4 +1,4 @@
--- {"id":11151410,"ver":"1.0.2","libVer":"1.0.0","author":"me","repo":"noveldex"}
+-- {"id":11151410,"ver":"1.0.3","libVer":"1.0.0","author":"me","repo":"noveldex"}
 
 local baseURL = "https://noveldex.io"
 
@@ -61,45 +61,12 @@ end
 ----------------------------------------------------
 
 local function hot(data)
-    local page = data[PAGE] or 1
+    local doc = GETDocument(baseURL .. "/series?sort=popular")
 
-    local doc = GETDocument(
-        baseURL .. "/series?sort=popular&page=" .. page
-    )
+    print(doc:html())
 
-    local rows = doc:select("div.group")
-
-    local novels = {}
-
-    for i = 0, rows:size() - 1 do
-        local row = rows:get(i)
-
-        local a = row:selectFirst("a[href*='/series/']")
-
-        local img = row:selectFirst("img")
-
-        if a then
-            local title = img and img:attr("alt") or a:text()
-
-            local imageURL = ""
-            if img then
-                imageURL = img:attr("src") or ""
-                if imageURL:sub(1,1) == "/" then
-                    imageURL = baseURL .. imageURL
-                end
-            end
-
-            table.insert(novels, Novel({
-                title = title,
-                link = shrinkURL(a:attr("href")),
-                imageURL = imageURL
-            }))
-        end
-    end
-
-    return novels
+    return {}
 end
-
 ----------------------------------------------------
 -- SEARCH
 ----------------------------------------------------
