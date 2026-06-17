@@ -1,4 +1,4 @@
--- {"id":11151410,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"noveldex"}
+-- {"id":11151410,"ver":"1.0.2","libVer":"1.0.0","author":"me","repo":"noveldex"}
 
 local baseURL = "https://noveldex.io"
 
