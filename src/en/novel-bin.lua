@@ -1,4 +1,4 @@
--- {"id":11151412,"ver":"1.1.0","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.1.1","libVer":"1.0.0","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -124,7 +124,6 @@ info:setImageURL(imageURL)
 
 	info:setImageURL(imageURL)
 
-	-- chapters (your existing working logic)
 	local chapters = {}
 
 	local columns = document:select(".col-xs-12.col-sm-4.col-md-4")
@@ -155,7 +154,6 @@ info:setImageURL(imageURL)
 	return info
 end
 
--- CHAPTER PAGE
 local function getPassage(chapterURL)
 	local doc = GETDocument(expandURL(chapterURL))
 
@@ -168,7 +166,6 @@ local function getPassage(chapterURL)
 	return ""
 end
 
--- LISTINGS
 local listings = {
 	Listing("Hot", true, hot),
 }
@@ -182,6 +179,8 @@ return {
 	search = search,
 	hasSearch = true,
 	isSearchIncrementing = true,
+	chapterType = ChapterType.HTML,
+
 
 	parseNovel = parseNovel,
 	getPassage = getPassage,
