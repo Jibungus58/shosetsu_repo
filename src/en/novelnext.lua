@@ -1,4 +1,4 @@
--- {"id":11151411,"ver":"1.0.0","libVer":"1.0.0","author":"me","repo":"novelnext"}
+-- {"id":11151411,"ver":"1.0.1","libVer":"1.0.0","author":"me","repo":"novelnext"}
 
 local baseURL = "https://novelnext.org/"
 
@@ -182,6 +182,7 @@ return {
 	search = search,
 	hasSearch = true,
 	isSearchIncrementing = true,
+		chapterType = ChapterType.HTML,
 
 	parseNovel = parseNovel,
 	getPassage = getPassage,
