@@ -30,6 +30,16 @@
             "ver": "1.0.3",
             "libVer": "1.0.0",
             "md5": ""
+        },
+                {
+            "name": "Novelbuddy",
+            "fileName": "novelbuddy",
+            "imageURL": "",
+            "id": 955666,
+            "lang": "en",
+            "ver": "3.0.0",
+            "libVer": "1.0.0",
+            "md5": ""
         }
     ],
     "styles": []
