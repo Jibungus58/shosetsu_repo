@@ -1,5 +1,5 @@
 
---{"id":11151412,"ver":"1.1.3","libVer":"1.0.1","author":"me","repo":"novel-bin"}
+-- {"id":11151412,"ver":"1.1.3","libVer":"1.0.1","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
@@ -182,41 +182,49 @@ local function parseNovel(novelURL)
 
 	local chapters = {}
 
-	local slug = getNovelSlug(novelURL)
+local slug = getNovelSlug(novelURL)
 
-	if slug then
-		local chapterListURL =
-			baseURL .. "ajax/chapter-list?slug=" .. slug
+if slug then
+	local chapterListURL = baseURL .. "ajax/chapter-list?slug=" .. slug
 
-		print("Loading chapter list from: " .. chapterListURL)
+	print("DEBUG chapter API = " .. chapterListURL)
 
-		local data = json.GET(chapterListURL)
+	local data = json.GET(
+		chapterListURL,
+		DEFAULT_HEADERS(),
+		DEFAULT_CACHE_CONTROL()
+	)
 
-		if data and data.success and data.chapters then
+	if data and data.success and data.chapters then
+		print("DEBUG chapters returned = " .. tostring(#data.chapters))
 
-			print("Found " .. #data.chapters .. " chapters")
+		for i = 1, #data.chapters do
+			local chapter = data.chapters[i]
 
-			for i = 1, #data.chapters do
-				local chapter = data.chapters[i]
+			if chapter.url and chapter.title then
+				local title = chapter.title
 
-				if chapter.url and chapter.title then
-
-					table.insert(chapters, NovelChapter({
-						title = chapter.title,
-						link = shrinkURL(
-							expandURL(chapter.url)
-						)
-					}))
-
+				-- Preserve the numbering shown by Novel-Bin's TOC
+				if chapter.index then
+					title = tostring(chapter.index) .. ". " .. title
 				end
-			end
 
-		else
-			print("ERROR: Invalid chapter list response")
+				table.insert(chapters, NovelChapter({
+					title = title,
+					link = shrinkURL(expandURL(chapter.url))
+				}))
+			end
 		end
 	else
-		print("ERROR: Could not determine novel slug from URL")
+		print("ERROR: Invalid chapter list response")
 	end
+else
+	print("ERROR: Could not determine novel slug from URL")
+end
+
+print("DEBUG final chapter count = " .. tostring(#chapters))
+
+info:setChapters(chapters)
 
 	info:setChapters(chapters)
 
