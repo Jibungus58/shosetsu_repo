@@ -1,5 +1,5 @@
 
---{"id":11151412,"ver":"1.1.3","libVer":"1.0.0","author":"me","repo":"novel-bin"}
+--{"id":11151412,"ver":"1.1.3","libVer":"1.0.1","author":"me","repo":"novel-bin"}
 
 local baseURL = "https://novel-bin.net/"
 
